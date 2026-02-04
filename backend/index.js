@@ -1,3 +1,7 @@
+const dns = require("dns");
+dns.setDefaultResultOrder("ipv4first");
+
+
 const port = 4000;
 const express = require("express");
 const app = express();
@@ -11,7 +15,19 @@ app.use(express.json());
 app.use(cors());
 
 // Database connection with MongoDB
-mongoose.connect("mongodb+srv://peminidev:pemini123@cluster0.frnazlt.mongodb.net/e-commerce");
+// mongoose.connect("mongodb+srv://peminidev:pemini123@cluster0.frnazlt.mongodb.net/e-commerce")
+
+// .then(() => {
+//   console.log("MongoDB Connected Successfully");
+// })
+// .catch((err) => {
+//   console.error("MongoDB connection failed:", err.message);
+//   process.exit(1);
+// });
+
+mongoose.connect("mongodb://127.0.0.1:27017/e-commerce")
+  .then(() => console.log("✅ MongoDB Local Connected"))
+  .catch(err => console.error("❌ MongoDB Error:", err));
 
 // API Creation
 
