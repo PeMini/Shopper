@@ -19,37 +19,128 @@ const AddProduct = () => {
     const changeHandler = (e) => {
         setProductDetails({...productDetails,[e.target.name]:e.target.value})
     }
+
+    
     const Add_Product = async () => {
-    console.log(productDetails);
+        try {
+            console.log(productDetails)
 
-    let responseData;
-    let formData = new FormData();
-    formData.append('product', image);
+            /* ---------- IMAGE UPLOAD ---------- */
+            let formData = new FormData()
+            formData.append('product', image)
 
-    await fetch('http://localhost:4000/upload', {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-        },
-        body: formData,
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        responseData = data;
-    });
+            const uploadResponse = await fetch('http://localhost:4000/upload', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                },
+                body: formData,
+            })
 
-    if (responseData.success) {
-        setProductDetails((prev) => ({
-            ...prev,
-            image: responseData.image_url
-        }));
+            const uploadData = await uploadResponse.json()
 
-        console.log({
-            ...productDetails,
-            image: responseData.image_url
-        });
+            if (!uploadData.success) {
+                alert("Image upload failed")
+                return
+            }
+
+            /* ---------- PRODUCT OBJECT (IMMUTABLE) ---------- */
+            const product = {
+                ...productDetails,
+                image: uploadData.image_url
+            }
+
+            console.log(product)
+
+            /* ---------- ADD PRODUCT ---------- */
+            const productResponse = await fetch('http://localhost:4000/addproduct', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(product),
+            })
+
+            const productData = await productResponse.json()
+
+            productData.success
+                ? alert("Product Added Successfully ✅")
+                : alert("Failed to Add Product ❌")
+
+        } catch (error) {
+            console.error(error)
+            alert("Something went wrong")
+        }
     }
-};
+
+    // const Add_Product = async () =>{
+    //     console.log(productDetails);
+    //     let responseData;
+    //     let product = productDetails;
+
+    //     let formData = new FormData();
+    //     formData.append('product',image);
+
+    //     await fetch('http://localhost:4000/upload',{
+    //         method:'POST',
+    //         headers:{
+    //             Accept:'application/json',
+    //         },
+    //         body:formData,
+    //     }).then((resp) => resp.json()).then((data)=>{responseData=data});
+
+    //     if(responseData.success)
+    //     {
+    //         product.image = responseData.image_url;
+    //         console.log(product);
+    //         await fetch ('http://localhost:4000/addproduct',{
+    //             method:'POST',
+    //             headers:{
+    //                 Accept:'application/json',
+    //                 'Content-Type':'application/json',
+    //             },
+    //             body:JSON.stringify(product),
+    //         }).then((resp=>resp.json()).then((data)=>{
+    //             data.success?alert("Product Added"):alert("Failed")
+    //         }))
+    //     }
+
+    // }
+
+//     const Add_Product = async () => {
+//     console.log(productDetails);
+
+//     let responseData;
+//     let formData = new FormData();
+//     formData.append('product', image);
+
+//     await fetch('http://localhost:4000/upload', {
+//         method: 'POST',
+//         headers: {
+//             Accept: 'application/json',
+//         },
+//         body: formData,
+//     })
+//     .then((resp) => resp.json())
+//     .then((data) => {
+//         responseData = data;
+//     });
+
+//     if (responseData.success) {
+//         setProductDetails((prev) => ({
+//             ...prev,
+//             image: responseData.image_url
+//         }));
+
+//         console.log({
+//             ...productDetails,
+//             image: responseData.image_url
+//         });
+//     }
+// };
+
+
 
 
   return (
